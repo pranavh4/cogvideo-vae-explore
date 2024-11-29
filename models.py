@@ -24,8 +24,8 @@ def get_uninitialized_model(
         dict[str, Any],
         AutoencoderKLCogVideoX.load_config(MODEL_CONFIG, subfolder="vae"),
     )
-    model = cast(
-        AutoencoderKLCogVideoX, AutoencoderKLCogVideoX.from_config(config, dtype=dtype)
+    model = cast(AutoencoderKLCogVideoX, AutoencoderKLCogVideoX.from_config(config)).to(
+        dtype
     )
 
     if model_type == AutoEncoderModelType.DEFAULT:
