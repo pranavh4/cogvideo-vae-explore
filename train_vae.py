@@ -19,13 +19,16 @@ def main(args):
         args.dataset_dir,
         max_frames=args.num_frames,
         resolution=(args.width, args.height),
+        dtype=DTYPE,
     )
     generator = torch.Generator()
     generator.manual_seed(SEED)
     train_set, test_set = torch.utils.data.random_split(dataset, [0.8, 0.2], generator)
 
     train_dataloader = DataLoader(train_set, shuffle=True, batch_size=args.batch_size)
-    model = get_uninitialized_model(AutoEncoderModelType.DEFAULT).to(args.device)
+    model = get_uninitialized_model(AutoEncoderModelType.DEFAULT, dtype=DTYPE).to(
+        args.device
+    )
     optimizer = AdamW(
         model.parameters(), weight_decay=1e-4, eps=1e-8, betas=(0.9, 0.95)
     )
@@ -44,7 +47,9 @@ def main(args):
             z = latent_dist.sample()
             output = model.decode(z).sample
             loss = loss_fn(output, batch, latent_dist)
-            logging.info(f"EPOCH: {epoch}/{args.num_epochs}, BATCH: {i}/{total_batches}, LOSS: {loss[0]}")
+            logging.info(
+                f"EPOCH: {epoch}/{args.num_epochs}, BATCH: {i}/{total_batches}, LOSS: {loss[0]}"
+            )
             loss.backward()
             optimizer.step()
 

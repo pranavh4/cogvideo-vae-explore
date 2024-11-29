@@ -12,7 +12,9 @@ class OpenVideoDataset(Dataset):
         data_directory: str,
         max_frames: int = 36,
         resolution: tuple[int, int] = (256, 256),
+        dtype: torch.dtype = torch.bfloat16,
     ) -> None:
+        self.dtype = dtype
         self.max_frames = max_frames
         self.transform = t.Compose([t.ToTensor(), t.Resize(resolution)])
         data_directory_abs_path = os.path.abspath(data_directory)
@@ -32,4 +34,4 @@ class OpenVideoDataset(Dataset):
 
             frames.append(self.transform(frame))
 
-        return torch.stack(frames).permute(1, 0, 2, 3)
+        return torch.stack(frames).permute(1, 0, 2, 3).type(self.dtype)

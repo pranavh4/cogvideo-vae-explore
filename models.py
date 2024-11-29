@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Any, cast
 
+import torch
 from diffusers.models.autoencoders.autoencoder_kl_cogvideox import (
     AutoencoderKLCogVideoX,
 )
@@ -16,16 +17,20 @@ class AutoEncoderModelType(Enum):
         return self.value
 
 
-def get_uninitialized_model(model_type: AutoEncoderModelType) -> AutoencoderKLCogVideoX:
+def get_uninitialized_model(
+    model_type: AutoEncoderModelType, dtype: torch.dtype = torch.bfloat16
+) -> AutoencoderKLCogVideoX:
     config = cast(
         dict[str, Any],
         AutoencoderKLCogVideoX.load_config(MODEL_CONFIG, subfolder="vae"),
     )
+    model = cast(
+        AutoencoderKLCogVideoX, AutoencoderKLCogVideoX.from_config(config, dtype=dtype)
+    )
 
     if model_type == AutoEncoderModelType.DEFAULT:
-        return cast(AutoencoderKLCogVideoX, AutoencoderKLCogVideoX.from_config(config))
+        return model
     elif model_type == AutoEncoderModelType.SPATIAL_FIRST:
-        model = cast(AutoencoderKLCogVideoX, AutoencoderKLCogVideoX.from_config(config))
         model.encoder.down_blocks[0].downsamplers[0].compress_time = False
         model.encoder.down_blocks[1].downsamplers[0].compress_time = True
         model.encoder.down_blocks[2].downsamplers[0].compress_time = True
