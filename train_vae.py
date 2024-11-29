@@ -32,7 +32,7 @@ def main(args):
 
     loss_fn = AutoEncoderLoss()
     start_time = time.time()
-
+    total_batches = len(train_dataloader)
     for epoch in range(args.num_epochs):
         for i, batch in enumerate(train_dataloader):
             if args.device == "cuda":
@@ -44,7 +44,7 @@ def main(args):
             z = latent_dist.sample()
             output = model.decode(z).sample
             loss = loss_fn(output, batch, latent_dist)
-            logging.info(f"EPOCH: {epoch}, BATCH: {i}, LOSS: {loss[0]}")
+            logging.info(f"EPOCH: {epoch}/{args.num_epochs}, BATCH: {i}/{total_batches}, LOSS: {loss[0]}")
             loss.backward()
             optimizer.step()
 
