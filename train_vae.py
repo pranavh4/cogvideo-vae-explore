@@ -48,7 +48,7 @@ def main(args):
             output = model.decode(z).sample
             loss = loss_fn(output, batch, latent_dist)
             logging.info(
-                f"EPOCH: {epoch}/{args.num_epochs}, BATCH: {i}/{total_batches}, LOSS: {loss[0]}"
+                f"EPOCH: {epoch + 1}/{args.num_epochs}, BATCH: {i + 1}/{total_batches}, LOSS: {loss[0]}"
             )
             loss.backward()
             optimizer.step()

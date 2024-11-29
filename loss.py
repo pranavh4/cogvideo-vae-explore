@@ -16,9 +16,7 @@ class AutoEncoderLoss:
         target: torch.Tensor,
         latent_dist: DiagonalGaussianDistribution,
     ):
-        print("TORCH L1", torch.nn.L1Loss()(output, target))
         l1_loss = torch.mean(((output - target).abs()).reshape(target.shape[0], -1), 1)
-        print("L1 shape", l1_loss.shape)
         # lpips_loss = self.loss_fn_lpips(output, target)
         kl_loss = latent_dist.kl()
         kl_loss = torch.sum(kl_loss) / kl_loss.shape[0]
