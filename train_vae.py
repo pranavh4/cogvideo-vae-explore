@@ -84,7 +84,7 @@ if __name__ == "__main__":
         choices=list(AutoEncoderModelType),
     )
     parser.add_argument(
-        "--log_file",
+        "--log-file",
         type=str,
         default="logs/default.log",
         help="Log file name",
