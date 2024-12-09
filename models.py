@@ -17,17 +17,9 @@ class AutoEncoderModelType(Enum):
         return self.value
 
 
-def get_uninitialized_model(
-    model_type: AutoEncoderModelType, dtype: torch.dtype = torch.bfloat16
+def cast_model(
+    model: AutoencoderKLCogVideoX, model_type: AutoEncoderModelType
 ) -> AutoencoderKLCogVideoX:
-    config = cast(
-        dict[str, Any],
-        AutoencoderKLCogVideoX.load_config(MODEL_CONFIG, subfolder="vae"),
-    )
-    model = cast(AutoencoderKLCogVideoX, AutoencoderKLCogVideoX.from_config(config)).to(
-        dtype
-    )
-
     if model_type == AutoEncoderModelType.DEFAULT:
         return model
     elif model_type == AutoEncoderModelType.SPATIAL_FIRST:
@@ -40,3 +32,29 @@ def get_uninitialized_model(
         model.decoder.up_blocks[2].upsamplers[0].compress_time = True
 
         return model
+
+
+def get_uninitialized_model(
+    model_type: AutoEncoderModelType, dtype: torch.dtype = torch.bfloat16
+) -> AutoencoderKLCogVideoX:
+    config = cast(
+        dict[str, Any],
+        AutoencoderKLCogVideoX.load_config(MODEL_CONFIG, subfolder="vae"),
+    )
+    model = cast(AutoencoderKLCogVideoX, AutoencoderKLCogVideoX.from_config(config)).to(
+        dtype
+    )
+    return cast_model(model, model_type)
+
+
+def get_trained_model(
+    model_path: str,
+    model_type: AutoEncoderModelType,
+    dtype: torch.dtype = torch.bfloat16,
+) -> AutoencoderKLCogVideoX:
+    model = cast(
+        AutoencoderKLCogVideoX,
+        AutoencoderKLCogVideoX.from_pretrained(model_path, torch_dtype=dtype),
+    )
+
+    return cast_model(model, model_type)
