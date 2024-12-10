@@ -12,6 +12,8 @@ MODEL_CONFIG = "THUDM/CogVideoX-2b"
 class AutoEncoderModelType(Enum):
     DEFAULT = "default"
     SPATIAL_FIRST = "spatial-first"
+    SPATIAL_MIDDLE = "spatial-middle"
+    SPATIAL_ENDS = "spatial-ends"
 
     def __str__(self) -> str:
         return self.value
@@ -30,6 +32,28 @@ def cast_model(
         model.decoder.up_blocks[0].upsamplers[0].compress_time = False
         model.decoder.up_blocks[1].upsamplers[0].compress_time = True
         model.decoder.up_blocks[2].upsamplers[0].compress_time = True
+
+        return model
+
+    elif model_type == AutoEncoderModelType.SPATIAL_MIDDLE:
+        model.encoder.down_blocks[0].downsamplers[0].compress_time = True
+        model.encoder.down_blocks[1].downsamplers[0].compress_time = True
+        model.encoder.down_blocks[2].downsamplers[0].compress_time = False
+
+        model.decoder.up_blocks[0].upsamplers[0].compress_time = False
+        model.decoder.up_blocks[1].upsamplers[0].compress_time = True
+        model.decoder.up_blocks[2].upsamplers[0].compress_time = True
+
+        return model
+
+    elif model_type == AutoEncoderModelType.SPATIAL_ENDS:
+        model.encoder.down_blocks[0].downsamplers[0].compress_time = False
+        model.encoder.down_blocks[1].downsamplers[0].compress_time = True
+        model.encoder.down_blocks[2].downsamplers[0].compress_time = True
+
+        model.decoder.up_blocks[0].upsamplers[0].compress_time = True
+        model.decoder.up_blocks[1].upsamplers[0].compress_time = True
+        model.decoder.up_blocks[2].upsamplers[0].compress_time = False
 
         return model
 

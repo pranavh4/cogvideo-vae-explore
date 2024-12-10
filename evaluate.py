@@ -25,10 +25,9 @@ def main(args):
     train_set, test_set = torch.utils.data.random_split(dataset, [0.8, 0.2], generator)
 
     test_dataloader = DataLoader(test_set, shuffle=True, batch_size=args.batch_size)
-    model = get_trained_model(
-        args.model_path, AutoEncoderModelType.DEFAULT, dtype=DTYPE
-    ).to(args.device)
-
+    model = get_trained_model(args.model_path, args.model_type, dtype=DTYPE).to(
+        args.device
+    )
     start_time = time.time()
     total_batches = len(test_dataloader)
     batch_psnrs = []
